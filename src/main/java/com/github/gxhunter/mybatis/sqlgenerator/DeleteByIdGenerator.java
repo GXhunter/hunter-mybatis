@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,24 +13,23 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.builder.annotation;
+package com.github.gxhunter.mybatis.sqlgenerator;
 
-import java.lang.reflect.Method;
+import com.github.gxhunter.mybatis.ISqlGenerator;
+import org.apache.ibatis.mapping.SqlCommandType;
 
 /**
- * @author Eduardo Macarron
+ * @author 树荫下的天空
+ * @date 2020/11/10 20:16
  */
-public class MethodResolver {
-  private final MapperAnnotationBuilder annotationBuilder;
-  private final Method method;
-
-  public MethodResolver(MapperAnnotationBuilder annotationBuilder, Method method) {
-    this.annotationBuilder = annotationBuilder;
-    this.method = method;
+public class DeleteByIdGenerator extends ISqlGenerator{
+  @Override
+  public String getSql(Class<?> entityClass){
+    return "delete from "+ getTableName(entityClass)+" where "+getIdColumnName(entityClass)+"=#{id}";
   }
 
-  public void resolve() {
-    annotationBuilder.parseStatement(method);
+  @Override
+  public SqlCommandType getCommandType(){
+    return SqlCommandType.DELETE;
   }
-
 }

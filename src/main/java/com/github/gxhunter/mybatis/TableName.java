@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,24 +13,17 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.builder.annotation;
+package com.github.gxhunter.mybatis;
 
-import java.lang.reflect.Method;
+import java.lang.annotation.*;
 
 /**
- * @author Eduardo Macarron
+ * @author 树荫下的天空
+ * @date 2020/11/10 18:57
  */
-public class MethodResolver {
-  private final MapperAnnotationBuilder annotationBuilder;
-  private final Method method;
-
-  public MethodResolver(MapperAnnotationBuilder annotationBuilder, Method method) {
-    this.annotationBuilder = annotationBuilder;
-    this.method = method;
-  }
-
-  public void resolve() {
-    annotationBuilder.parseStatement(method);
-  }
-
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface TableName{
+  String value();
 }
