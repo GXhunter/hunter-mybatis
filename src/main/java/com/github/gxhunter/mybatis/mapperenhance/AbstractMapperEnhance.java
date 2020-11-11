@@ -28,13 +28,13 @@ public abstract class AbstractMapperEnhance{
   /**
    * @param entityClass    实体类
    * @param withPrimaryKey 是否包含主键
-   * @return
+   * @return java属性名->数据库列名
    */
   protected Map<String, String> getColumnMap(Class entityClass,boolean withPrimaryKey){
     Map<String, String> map = new HashMap<>();
     Arrays.stream(entityClass.getDeclaredFields()).forEach(field -> {
       if(withPrimaryKey || !HunterUtils.isPrimaryKey(field)){
-        map.put(field.getName(),getColumn(field));
+        map.put(field.getName(),getColumnName(field));
       }
     });
     return map;
@@ -49,7 +49,7 @@ public abstract class AbstractMapperEnhance{
   protected String getIdColumnName(Class entityClass){
     for(Field field : entityClass.getDeclaredFields()){
       if(HunterUtils.isPrimaryKey(field)){
-        return getColumn(field);
+        return getColumnName(field);
       }
     }
     throw new IllegalStateException("未找到id字段，请检查实体" + entityClass + "是否带有id注解");
@@ -62,7 +62,7 @@ public abstract class AbstractMapperEnhance{
     return clazz.getSimpleName();
   }
 
-  protected final String getColumn(Field field){
+  protected final String getColumnName(Field field){
     if(field.isAnnotationPresent(Column.class)){
       Column column = field.getAnnotation(Column.class);
       return column.value().isEmpty() ? field.getName() : column.value();

@@ -39,7 +39,7 @@ public interface BaseMapper<T>{
    * @param entity 实体
    * @return 影响条目
    */
-  int updateNonNullById(@Param("id") Serializable id,@Param("entity") T entity);
+  int updateByIdSelective(@Param("id") Serializable id,@Param("entity") T entity);
 
   /**
    * 更新所有字段，包括null
@@ -50,5 +50,18 @@ public interface BaseMapper<T>{
    */
   int updateById(@Param("id") Serializable id,@Param("entity") T entity);
 
+  /**
+   * 插入一条数据
+   * @param entity 实体
+   * @return 影响条目
+   */
+  int insert(@Param("entity") T entity);
 
+
+  /**
+   * 批量插入
+   * @param entityList 实体
+   * @return 影响条目
+   */
+  int insertBatch(@Param("entityList") List<T> entityList);
 }

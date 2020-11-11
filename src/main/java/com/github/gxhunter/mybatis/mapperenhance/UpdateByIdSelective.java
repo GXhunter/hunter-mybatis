@@ -20,8 +20,9 @@ import org.apache.ibatis.mapping.SqlCommandType;
 /**
  * @author 树荫下的天空
  * @date 2020/11/10 20:17
+ * 只修改非 null字段
  */
-public class UpdateNonNull extends AbstractMapperEnhance{
+public class UpdateByIdSelective extends AbstractMapperEnhance{
   @Override
   public String getMybatisFragment(Class<?> entityClass){
     StringBuilder sb = new StringBuilder("<script>");

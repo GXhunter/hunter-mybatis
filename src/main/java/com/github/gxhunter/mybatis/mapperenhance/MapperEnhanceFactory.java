@@ -15,11 +15,10 @@
  */
 package com.github.gxhunter.mybatis.mapperenhance;
 
-import com.github.gxhunter.mybatis.mapperenhance.*;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,20 +27,39 @@ import java.util.Map;
  */
 public class MapperEnhanceFactory{
   public static final Map<String, AbstractMapperEnhance> SQL_GENERATOR_MAP = new HashMap<>();
-  private static final AbstractMapperEnhance SELECT_BY_ID = new SelectById();
-  private static final AbstractMapperEnhance SELECT_ALL = new SelectAll();
-  private static final AbstractMapperEnhance UPDATE_BYID = new UpdateById();
-  private static final AbstractMapperEnhance UPDATE_NON_NULL = new UpdateNonNull();
-  private static final AbstractMapperEnhance DELETE_BYID = new DeleteById();
   private static final AbstractMapperEnhance EMPTY = new EmptyMapperEnhance();
   static {
     try{
 //      内置的五个方法
-      registerCommonMapper(BaseMapper.class.getMethod("selectById",Serializable.class),SELECT_BY_ID);
-      registerCommonMapper(BaseMapper.class.getMethod("selectAll"),SELECT_ALL);
-      registerCommonMapper(BaseMapper.class.getMethod("deleteById", Serializable.class),DELETE_BYID);
-      registerCommonMapper(BaseMapper.class.getMethod("updateById", Serializable.class, Object.class),UPDATE_BYID);
-      registerCommonMapper(BaseMapper.class.getMethod("updateNonNullById", Serializable.class, Object.class),UPDATE_NON_NULL);
+      registerCommonMapper(
+        new SelectById(),
+        BaseMapper.class.getMethod("selectById",Serializable.class));
+
+      registerCommonMapper(
+        new SelectAll(),
+        BaseMapper.class.getMethod("selectAll"));
+
+      registerCommonMapper(
+        new DeleteById(),
+        BaseMapper.class.getMethod("deleteById", Serializable.class));
+
+      registerCommonMapper(
+        new UpdateById(),
+        BaseMapper.class.getMethod("updateById", Serializable.class, Object.class));
+
+      registerCommonMapper(
+        new UpdateByIdSelective(),
+        BaseMapper.class.getMethod("updateByIdSelective", Serializable.class, Object.class));
+
+      registerCommonMapper(
+        new Insert()
+        ,BaseMapper.class.getMethod("insert", Object.class));
+
+      registerCommonMapper(
+        new InsertBatch()
+        ,BaseMapper.class.getMethod("insertBatch", List.class));
+
+
     }catch(NoSuchMethodException e){
       e.printStackTrace();
     }
@@ -61,7 +79,7 @@ public class MapperEnhanceFactory{
    * @param method 方法，用于做key
    * @param sqlGenerator 对应的生成器
    */
-  public static void registerCommonMapper(Method method,AbstractMapperEnhance sqlGenerator){
+  public static void registerCommonMapper(AbstractMapperEnhance sqlGenerator,Method method){
     SQL_GENERATOR_MAP.put(method.toGenericString(),sqlGenerator);
   }
 
