@@ -13,26 +13,17 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.gxhunter.mybatis.sqlgenerator;
+package com.github.gxhunter.mybatis.annotation;
 
-import com.github.gxhunter.mybatis.HunterUtils;
-import com.github.gxhunter.mybatis.ISqlGenerator;
-import org.apache.ibatis.mapping.SqlCommandType;
+import java.lang.annotation.*;
 
 /**
  * @author 树荫下的天空
- * @date 2020/11/10 20:18
+ * @date 2020/11/10 18:57
  */
-public class SelectAllGenerator extends ISqlGenerator{
-  @Override
-  public String getSql(Class<?> entityClass){
-    return "select " +
-      HunterUtils.join(getColumnMap(entityClass,true).values(),",") +
-      " from " + getTableName(entityClass);
-  }
-
-  @Override
-  public SqlCommandType getCommandType(){
-    return SqlCommandType.SELECT;
-  }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface TableName{
+  String value();
 }

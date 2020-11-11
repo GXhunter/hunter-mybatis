@@ -13,18 +13,17 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.gxhunter.mybatis.sqlgenerator;
+package com.github.gxhunter.mybatis.mapperenhance;
 
-import com.github.gxhunter.mybatis.ISqlGenerator;
 import org.apache.ibatis.mapping.SqlCommandType;
 
 /**
  * @author 树荫下的天空
  * @date 2020/11/10 20:17
  */
-public class UpdateNonNullGenerator extends ISqlGenerator{
+public class UpdateNonNull extends AbstractMapperEnhance{
   @Override
-  public String getSql(Class<?> entityClass){
+  public String getMybatisFragment(Class<?> entityClass){
     StringBuilder sb = new StringBuilder("<script>");
     sb.append("update ");
     sb.append(getTableName(entityClass))

@@ -23,7 +23,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.github.gxhunter.mybatis.*;
+import com.github.gxhunter.mybatis.annotation.Column;
+import com.github.gxhunter.mybatis.annotation.CommonMapper;
+import com.github.gxhunter.mybatis.mapperenhance.AbstractMapperEnhance;
+import com.github.gxhunter.mybatis.mapperenhance.BaseMapper;
+import com.github.gxhunter.mybatis.mapperenhance.MapperEnhanceFactory;
+import com.github.gxhunter.mybatis.toolkit.HunterUtils;
 import org.apache.ibatis.annotations.Arg;
 import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.CacheNamespaceRef;
@@ -88,22 +93,9 @@ public class MapperAnnotationBuilder {
       .of(Select.class, Update.class, Insert.class, Delete.class, SelectProvider.class, UpdateProvider.class,
           InsertProvider.class, DeleteProvider.class)
       .collect(Collectors.toSet());
-  /**
-   * 是否需要resultMap
-   */
-  public static final Set<String> needResultMap = new HashSet<>();
   private final Configuration configuration;
   private final MapperBuilderAssistant assistant;
   private final Class<?> type;
-
-  static {
-    try{
-      Class.forName("com.github.gxhunter.mybatis.SqlGeneratorFactory");
-    }catch(ClassNotFoundException e){
-      e.printStackTrace();
-    }
-  }
-
   public MapperAnnotationBuilder(Configuration configuration, Class<?> type) {
     String resource = type.getName().replace('.', '/') + ".java (best guess)";
     this.assistant = new MapperBuilderAssistant(configuration, resource);
@@ -123,9 +115,14 @@ public class MapperAnnotationBuilder {
         if (!canHaveStatement(method)) {
           continue;
         }
-        if (needResultMap.contains(method.toGenericString())||getAnnotationWrapper(method, false, Select.class, SelectProvider.class).isPresent()
+        if (getAnnotationWrapper(method, false, Select.class, SelectProvider.class).isPresent()
             && method.getAnnotation(ResultMap.class) == null) {
           parseResultMap(method);
+        }else if(method.getDeclaringClass().isAnnotationPresent(CommonMapper.class)){
+//        todo 这里做了修改
+          if(MapperEnhanceFactory.getByMethod(method).getCommandType() == SqlCommandType.SELECT){
+            parseResultMap(method);
+          }
         }
         try {
           parseStatement(method);
@@ -228,7 +225,7 @@ public class MapperAnnotationBuilder {
     Result[] results = method.getAnnotationsByType(Result.class);
     TypeDiscriminator typeDiscriminator = method.getAnnotation(TypeDiscriminator.class);
     String resultMapId = generateResultMapName(method);
-    if(method.getDeclaringClass() == BaseMapper.class){
+    if(method.getDeclaringClass().isAnnotationPresent(CommonMapper.class)){
       Type entityType = HunterUtils.getEntityClass((Class<BaseMapper>) type);
       applyResultMap( resultMapId,returnType, entityType);
     }else {
@@ -317,12 +314,12 @@ public class MapperAnnotationBuilder {
       sqlCommandType = statementAnnotation.getSqlCommandType();
       sqlSource = buildSqlSource(statementAnnotation.getAnnotation(), parameterTypeClass, languageDriver, method);
       databaseId = statementAnnotation.getDatabaseId();
-    }else if(method.getDeclaringClass() == BaseMapper.class){
-//      这里定制自带的通用增删改查方法
+    }else if(method.getDeclaringClass().isAnnotationPresent(CommonMapper.class)){
+// todo      这里定制自带的通用增删改查方法
       Class entityClass = HunterUtils.getEntityClass((Class<BaseMapper>) type);
-      ISqlGenerator sqlGenerator = SqlGeneratorFactory.getByMethodName(method.toGenericString());
+      AbstractMapperEnhance sqlGenerator = MapperEnhanceFactory.getByMethodName(method.toGenericString());
       sqlCommandType = sqlGenerator.getCommandType();
-      sqlSource = buildSqlSource(sqlGenerator.getSql(entityClass),parameterTypeClass,languageDriver,method);
+      sqlSource = buildSqlSource(sqlGenerator.getMybatisFragment(entityClass),parameterTypeClass,languageDriver,method);
     }else {
       return;
     }
@@ -354,7 +351,7 @@ public class MapperAnnotationBuilder {
     Integer timeout = null;
     StatementType statementType = StatementType.PREPARED;
     ResultSetType resultSetType = configuration.getDefaultResultSetType();
-    boolean isSelect = sqlCommandType == SqlCommandType.SELECT||needResultMap.contains(method.toGenericString());
+    boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
     boolean flushCache = !isSelect;
     boolean useCache = isSelect;
     if (options != null) {

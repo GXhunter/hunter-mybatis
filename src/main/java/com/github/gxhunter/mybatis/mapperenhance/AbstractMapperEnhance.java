@@ -1,6 +1,9 @@
 
-package com.github.gxhunter.mybatis;
+package com.github.gxhunter.mybatis.mapperenhance;
 
+import com.github.gxhunter.mybatis.toolkit.HunterUtils;
+import com.github.gxhunter.mybatis.annotation.Column;
+import com.github.gxhunter.mybatis.annotation.TableName;
 import org.apache.ibatis.mapping.SqlCommandType;
 
 import java.lang.reflect.Field;
@@ -12,8 +15,13 @@ import java.util.Map;
  * @author 树荫下的天空
  * @date 2020/11/10 19:02
  */
-public abstract class ISqlGenerator{
-  public abstract String getSql(Class<?> entityClass);
+public abstract class AbstractMapperEnhance{
+  /**
+   * 动态生成对应的mybatis脚本片段，注意并不是sql语句，只会在启动时加载一次
+   * @param entityClass  实体类
+   * @return 模板语法片段
+   */
+  public abstract String getMybatisFragment(Class<?> entityClass);
 
   public abstract SqlCommandType getCommandType();
 

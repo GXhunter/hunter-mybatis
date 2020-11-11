@@ -13,33 +13,26 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.gxhunter.mybatis.sqlgenerator;
+package com.github.gxhunter.mybatis.mapperenhance;
 
-import com.github.gxhunter.mybatis.ISqlGenerator;
+import com.github.gxhunter.mybatis.toolkit.HunterUtils;
 import org.apache.ibatis.mapping.SqlCommandType;
 
 /**
  * @author 树荫下的天空
- * @date 2020/11/10 20:16
+ * @date 2020/11/10 19:03
  */
-public class UpdateByIdGenerator extends ISqlGenerator{
+public class SelectById extends AbstractMapperEnhance{
   @Override
-  public String getSql(Class<?> entityClass){
-    StringBuilder sb = new StringBuilder("<script> ");
-    sb.append("update ");
-    sb.append(getTableName(entityClass))
-      .append(" <set> ");
-    getColumnMap(entityClass,false).forEach((property,column) -> {
-      sb.append(column).append("=").append("#{entity.").append(property).append("}").append(",");
-    });
-    sb.append("</set>");
-    sb.append(" where ").append(getIdColumnName(entityClass)).append("= #{id}");
-    sb.append("</script>");
-    return sb.toString();
+  public String getMybatisFragment(Class<?> entityClass){
+    return "select " +
+      HunterUtils.join(getColumnMap(entityClass,true).values(),",") +
+      " from " + getTableName(entityClass) + " where " +
+      getIdColumnName(entityClass) + "=#{id}";
   }
 
   @Override
   public SqlCommandType getCommandType(){
-    return SqlCommandType.UPDATE;
+    return SqlCommandType.SELECT;
   }
 }

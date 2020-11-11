@@ -13,7 +13,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.gxhunter.mybatis;
+package com.github.gxhunter.mybatis.toolkit;
+
+import com.github.gxhunter.mybatis.annotation.Column;
+import com.github.gxhunter.mybatis.mapperenhance.BaseMapper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

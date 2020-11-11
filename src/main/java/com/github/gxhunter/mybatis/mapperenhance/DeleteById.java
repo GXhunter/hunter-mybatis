@@ -13,30 +13,22 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.gxhunter.mybatis;
+package com.github.gxhunter.mybatis.mapperenhance;
 
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.TypeHandler;
-import org.apache.ibatis.type.UnknownTypeHandler;
-
-import java.lang.annotation.*;
+import org.apache.ibatis.mapping.SqlCommandType;
 
 /**
  * @author 树荫下的天空
- * @date 2020/11/10 17:21
+ * @date 2020/11/10 20:16
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
-public @interface Column{
-  boolean id() default false;
-  /**
-   * 对应数据库的字段名
-   * @return
-   */
-  String value() default "";
+public class DeleteById extends AbstractMapperEnhance{
+  @Override
+  public String getMybatisFragment(Class<?> entityClass){
+    return "delete from "+ getTableName(entityClass)+" where "+getIdColumnName(entityClass)+"=#{id}";
+  }
 
-  JdbcType jdbcType() default JdbcType.UNDEFINED;
-
-  Class<? extends TypeHandler> typeHandler() default UnknownTypeHandler.class;
+  @Override
+  public SqlCommandType getCommandType(){
+    return SqlCommandType.DELETE;
+  }
 }

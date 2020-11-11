@@ -1,4 +1,5 @@
-package com.github.gxhunter.mybatis;
+package com.github.gxhunter.mybatis.mapperenhance;
+import com.github.gxhunter.mybatis.annotation.CommonMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -9,6 +10,7 @@ import java.util.List;
  * @author 树荫下的天空
  * @date 2020/11/10 16:02
  */
+@CommonMapper
 public interface BaseMapper<T>{
   /**
    * 通过id查询

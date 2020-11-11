@@ -13,23 +13,25 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.gxhunter.mybatis.sqlgenerator;
+package com.github.gxhunter.mybatis.mapperenhance;
 
-import com.github.gxhunter.mybatis.ISqlGenerator;
+import com.github.gxhunter.mybatis.toolkit.HunterUtils;
 import org.apache.ibatis.mapping.SqlCommandType;
 
 /**
  * @author 树荫下的天空
- * @date 2020/11/10 20:16
+ * @date 2020/11/10 20:18
  */
-public class DeleteByIdGenerator extends ISqlGenerator{
+public class SelectAll extends AbstractMapperEnhance{
   @Override
-  public String getSql(Class<?> entityClass){
-    return "delete from "+ getTableName(entityClass)+" where "+getIdColumnName(entityClass)+"=#{id}";
+  public String getMybatisFragment(Class<?> entityClass){
+    return "select " +
+      HunterUtils.join(getColumnMap(entityClass,true).values(),",") +
+      " from " + getTableName(entityClass);
   }
 
   @Override
   public SqlCommandType getCommandType(){
-    return SqlCommandType.DELETE;
+    return SqlCommandType.SELECT;
   }
 }

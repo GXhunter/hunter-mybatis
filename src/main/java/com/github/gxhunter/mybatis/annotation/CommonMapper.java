@@ -13,17 +13,21 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.gxhunter.mybatis;
+package com.github.gxhunter.mybatis.annotation;
+
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.UnknownTypeHandler;
 
 import java.lang.annotation.*;
 
 /**
  * @author 树荫下的天空
- * @date 2020/11/10 18:57
+ * @date 2020/11/10 17:21
+ * 声明是通用mapper
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface TableName{
-  String value();
+public @interface CommonMapper{
 }
