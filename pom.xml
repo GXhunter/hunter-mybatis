@@ -146,6 +146,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.12</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jsqlparser</groupId>
+      <artifactId>jsqlparser</artifactId>
+      <version>3.2</version>
+    </dependency>
+    <dependency>
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
       <version>3.2.14</version>
@@ -281,6 +291,12 @@
       <artifactId>mysql</artifactId>
       <version>1.14.2</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>5.2.7.RELEASE</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2020/11/10 16:02
  */
 @CommonMapper
-public interface BaseMapper<T>{
+public interface Mapper<T>{
   /**
    * 通过id查询
    * @param id  主键

@@ -33,31 +33,31 @@ public class MapperEnhanceFactory{
 //      内置的五个方法
       registerCommonMapper(
         new SelectById(),
-        BaseMapper.class.getMethod("selectById",Serializable.class));
+        Mapper.class.getMethod("selectById",Serializable.class));
 
       registerCommonMapper(
         new SelectAll(),
-        BaseMapper.class.getMethod("selectAll"));
+        Mapper.class.getMethod("selectAll"));
 
       registerCommonMapper(
         new DeleteById(),
-        BaseMapper.class.getMethod("deleteById", Serializable.class));
+        Mapper.class.getMethod("deleteById", Serializable.class));
 
       registerCommonMapper(
         new UpdateById(),
-        BaseMapper.class.getMethod("updateById", Serializable.class, Object.class));
+        Mapper.class.getMethod("updateById", Serializable.class, Object.class));
 
       registerCommonMapper(
         new UpdateByIdSelective(),
-        BaseMapper.class.getMethod("updateByIdSelective", Serializable.class, Object.class));
+        Mapper.class.getMethod("updateByIdSelective", Serializable.class, Object.class));
 
       registerCommonMapper(
         new Insert()
-        ,BaseMapper.class.getMethod("insert", Object.class));
+        ,Mapper.class.getMethod("insert", Object.class));
 
       registerCommonMapper(
         new InsertBatch()
-        ,BaseMapper.class.getMethod("insertBatch", List.class));
+        ,Mapper.class.getMethod("insertBatch", List.class));
 
 
     }catch(NoSuchMethodException e){

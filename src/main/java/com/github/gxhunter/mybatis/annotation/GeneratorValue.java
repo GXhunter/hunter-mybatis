@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,27 +13,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.plugin;
+package com.github.gxhunter.mybatis.annotation;
 
-import java.util.Properties;
+import java.lang.annotation.*;
 
 /**
- * @author Clinton Begin
+ * @author 树荫下的天空
+ * @date 2020/11/10 18:57
  */
-public interface Interceptor {
-
-  Object intercept(Invocation invocation) throws Throwable;
-
-  /**
-   * @param target 包装插件成新的对象
-   * @return 代理对象可以重复代理
-   */
-  default Object plugin(Object target) {
-    return Plugin.wrap(target, this);
-  }
-
-  default void setProperties(Properties properties) {
-    // NOP
-  }
-
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+public @interface GeneratorValue{
 }

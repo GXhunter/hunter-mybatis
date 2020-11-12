@@ -24,10 +24,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.gxhunter.mybatis.annotation.Column;
-import com.github.gxhunter.mybatis.annotation.CommonMapper;
+import com.github.gxhunter.mybatis.annotation.GeneratorValue;
 import com.github.gxhunter.mybatis.mapperenhance.AbstractMapperEnhance;
-import com.github.gxhunter.mybatis.mapperenhance.BaseMapper;
+import com.github.gxhunter.mybatis.mapperenhance.Mapper;
 import com.github.gxhunter.mybatis.mapperenhance.MapperEnhanceFactory;
+import com.github.gxhunter.mybatis.resultenhance.IdResultEnum;
 import com.github.gxhunter.mybatis.toolkit.HunterUtils;
 import org.apache.ibatis.annotations.Arg;
 import org.apache.ibatis.annotations.CacheNamespace;
@@ -118,7 +119,7 @@ public class MapperAnnotationBuilder {
         if (getAnnotationWrapper(method, false, Select.class, SelectProvider.class).isPresent()
             && method.getAnnotation(ResultMap.class) == null) {
           parseResultMap(method);
-        }else if(method.getDeclaringClass().isAnnotationPresent(CommonMapper.class)){
+        }else if(HunterUtils.isCommonMapperMethod(method)){
 //        todo 这里做了修改
           if(MapperEnhanceFactory.getByMethod(method).getCommandType() == SqlCommandType.SELECT){
             parseResultMap(method);
@@ -225,8 +226,8 @@ public class MapperAnnotationBuilder {
     Result[] results = method.getAnnotationsByType(Result.class);
     TypeDiscriminator typeDiscriminator = method.getAnnotation(TypeDiscriminator.class);
     String resultMapId = generateResultMapName(method);
-    if(method.getDeclaringClass().isAnnotationPresent(CommonMapper.class)){
-      Type entityType = HunterUtils.getEntityClass((Class<BaseMapper>) type);
+    if(HunterUtils.isCommonMapperMethod(method)){
+      Type entityType = HunterUtils.getEntityClass((Class<Mapper>) type);
       applyResultMap( resultMapId,returnType, entityType);
     }else {
       applyResultMap(resultMapId, returnType, args, results, typeDiscriminator);
@@ -310,13 +311,16 @@ public class MapperAnnotationBuilder {
     SqlSource sqlSource;
     SqlCommandType sqlCommandType;
     String databaseId = null;
+    String keyProperty = null;
+    String keyColumn = null;
+    KeyGenerator keyGenerator= NoKeyGenerator.INSTANCE;;
     if(statementAnnotation != null){
       sqlCommandType = statementAnnotation.getSqlCommandType();
       sqlSource = buildSqlSource(statementAnnotation.getAnnotation(), parameterTypeClass, languageDriver, method);
       databaseId = statementAnnotation.getDatabaseId();
-    }else if(method.getDeclaringClass().isAnnotationPresent(CommonMapper.class)){
+    }else if(HunterUtils.isCommonMapperMethod(method)){
 // todo      这里定制自带的通用增删改查方法
-      Class entityClass = HunterUtils.getEntityClass((Class<BaseMapper>) type);
+      Class entityClass = HunterUtils.getEntityClass((Class<Mapper>) type);
       AbstractMapperEnhance sqlGenerator = MapperEnhanceFactory.getByMethodName(method.toGenericString());
       sqlCommandType = sqlGenerator.getCommandType();
       sqlSource = buildSqlSource(sqlGenerator.getMybatisFragment(entityClass),parameterTypeClass,languageDriver,method);
@@ -327,13 +331,18 @@ public class MapperAnnotationBuilder {
     final Options options = getAnnotationWrapper(method, false, Options.class).map(x -> (Options)x.getAnnotation()).orElse(null);
     final String mappedStatementId = type.getName() + "." + method.getName();
 
-    final KeyGenerator keyGenerator;
-    String keyProperty = null;
-    String keyColumn = null;
     if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
       // first check for SelectKey annotation - that overrides everything else
       SelectKey selectKey = getAnnotationWrapper(method, false, SelectKey.class).map(x -> (SelectKey)x.getAnnotation()).orElse(null);
-      if (selectKey != null) {
+      if(HunterUtils.isCommonMapperMethod(method)){
+        Class entityClass = HunterUtils.getEntityClass((Class<Mapper>) type);
+        Field idField = HunterUtils.getIdField(entityClass);
+        if(idField != null){
+          keyColumn = HunterUtils.getIdColMap(entityClass).get(IdResultEnum.KEY_COLUMN);
+          keyProperty = HunterUtils.getIdColMap(entityClass).get(IdResultEnum.KEY_PROPERTY);
+          keyGenerator = idField.isAnnotationPresent(GeneratorValue.class)?Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
+        }
+      } else if (selectKey != null) {
         keyGenerator = handleSelectKeyAnnotation(selectKey, mappedStatementId, getParameterType(method), languageDriver);
         keyProperty = selectKey.keyProperty();
       } else if (options == null) {
@@ -343,8 +352,6 @@ public class MapperAnnotationBuilder {
         keyProperty = options.keyProperty();
         keyColumn = options.keyColumn();
       }
-    } else {
-      keyGenerator = NoKeyGenerator.INSTANCE;
     }
 
     Integer fetchSize = null;
