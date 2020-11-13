@@ -112,7 +112,7 @@
     <url>http://github.com/mybatis/mybatis-3</url>
     <connection>scm:git:ssh://github.com/mybatis/mybatis-3.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mybatis/mybatis-3.git</developerConnection>
-    <tag>mybatis-3.5.5</tag>
+    <tag>mybatis-3.5.5-SNAPSHOT</tag>
   </scm>
   <issueManagement>
     <system>GitHub Issue Management</system>
@@ -128,6 +128,14 @@
       <name>Mybatis GitHub Pages</name>
       <url>git:ssh://git@github.com/mybatis/mybatis-3.git?gh-pages#</url>
     </site>
+    <repository>
+      <id>gprp</id>
+      <url>http://nexus.4399doc.com:8081/repository/gprp/</url>
+    </repository>
+    <snapshotRepository>
+      <id>gprp-snapshot</id>
+      <url>http://nexus.4399doc.com:8081/repository/gprp-snapshot/</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <properties>

@@ -15,7 +15,13 @@
  */
 package com.github.gxhunter.mybatis.mapperenhance;
 
+import com.github.gxhunter.mybatis.resultenhance.IdResultEnum;
+import com.github.gxhunter.mybatis.resultenhance.MulResult;
+import com.github.gxhunter.mybatis.toolkit.HunterUtils;
 import org.apache.ibatis.mapping.SqlCommandType;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 /**
  * @author 树荫下的天空
@@ -24,6 +30,10 @@ import org.apache.ibatis.mapping.SqlCommandType;
 public class UpdateById extends AbstractMapperEnhance{
   @Override
   public String getMybatisFragment(Class<?> entityClass){
+    List<MulResult<IdResultEnum, String>> idColMap = HunterUtils.getIdColMap(entityClass);
+    if(CollectionUtils.isEmpty(idColMap)){
+      throw new IllegalStateException("没有找到主键字段");
+    }
     StringBuilder sb = new StringBuilder("<script> ");
     sb.append("update ");
     sb.append(getTableName(entityClass))
@@ -32,7 +42,13 @@ public class UpdateById extends AbstractMapperEnhance{
       sb.append(column).append("=").append("#{entity.").append(property).append("}").append(",");
     });
     sb.append("</set>");
-    sb.append(" where ").append(getIdColumnName(entityClass)).append("= #{id}");
+    sb.append(" <where> ");
+    idColMap.forEach(idCol -> {
+      sb.append(" and ").append(idCol.get(IdResultEnum.KEY_COLUMN))
+        .append("= #{entity.")
+        .append(idCol.get(IdResultEnum.KEY_PROPERTY)).append("}");
+    });
+    sb.append("</where>");
     sb.append("</script>");
     return sb.toString();
   }

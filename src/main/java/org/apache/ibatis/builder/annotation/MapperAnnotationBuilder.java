@@ -336,10 +336,10 @@ public class MapperAnnotationBuilder {
       SelectKey selectKey = getAnnotationWrapper(method, false, SelectKey.class).map(x -> (SelectKey)x.getAnnotation()).orElse(null);
       if(HunterUtils.isCommonMapperMethod(method)){
         Class entityClass = HunterUtils.getEntityClass((Class<Mapper>) type);
-        Field idField = HunterUtils.getIdField(entityClass);
+        Field idField = HunterUtils.getGeneratorValueField(entityClass);
         if(idField != null){
-          keyColumn = HunterUtils.getIdColMap(entityClass).get(IdResultEnum.KEY_COLUMN);
-          keyProperty = HunterUtils.getIdColMap(entityClass).get(IdResultEnum.KEY_PROPERTY);
+          keyColumn = HunterUtils.getColumnName(idField);
+          keyProperty = idField.getName();
           keyGenerator = idField.isAnnotationPresent(GeneratorValue.class)?Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
         }
       } else if (selectKey != null) {

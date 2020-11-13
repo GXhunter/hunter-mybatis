@@ -45,11 +45,11 @@ public class MapperEnhanceFactory{
 
       registerCommonMapper(
         new UpdateById(),
-        Mapper.class.getMethod("updateById", Serializable.class, Object.class));
+        Mapper.class.getMethod("updateById",  Object.class));
 
       registerCommonMapper(
         new UpdateByIdSelective(),
-        Mapper.class.getMethod("updateByIdSelective", Serializable.class, Object.class));
+        Mapper.class.getMethod("updateByIdSelective", Object.class));
 
       registerCommonMapper(
         new Insert()

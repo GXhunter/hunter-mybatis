@@ -17,6 +17,7 @@ package com.github.gxhunter.mybatis.toolkit;
 
 import com.github.gxhunter.mybatis.annotation.Column;
 import com.github.gxhunter.mybatis.annotation.CommonMapper;
+import com.github.gxhunter.mybatis.annotation.GeneratorValue;
 import com.github.gxhunter.mybatis.mapperenhance.Mapper;
 import com.github.gxhunter.mybatis.resultenhance.IdResultEnum;
 import com.github.gxhunter.mybatis.resultenhance.MulResult;
@@ -27,6 +28,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author 树荫下的天空
@@ -73,16 +77,14 @@ public class HunterUtils{
     }
   }
 
-  public static MulResult<IdResultEnum, String> getIdColMap(Class entityClass){
-      for(Field field : entityClass.getDeclaredFields()){
-        if(isPrimaryKey(field)){
-          return MulResult.build(IdResultEnum.class,String.class)
-            .add(IdResultEnum.KEY_PROPERTY,field.getName())
-            .add(IdResultEnum.KEY_COLUMN,getColumnName(field)).build()
-          ;
-        }
-      }
-      throw new IllegalStateException("未找到id字段，请检查实体" + entityClass + "是否带有id注解");
+  public static List<MulResult<IdResultEnum, String>> getIdColMap(Class entityClass){
+    return Arrays.stream(entityClass.getDeclaredFields())
+      .filter(HunterUtils::isPrimaryKey)
+      .map(e -> MulResult.build(IdResultEnum.class,String.class)
+        .add(IdResultEnum.KEY_COLUMN,getColumnName(e))
+        .add(IdResultEnum.KEY_PROPERTY,e.getName())
+        .build()
+      ).collect(Collectors.toList());
   }
 
 
@@ -93,12 +95,19 @@ public class HunterUtils{
     return false;
   }
 
-  public static Field getIdField(Class entityClass){
-    for(Field field : entityClass.getDeclaredFields()){
-      if(isPrimaryKey(field)){
-        return field;
-      }
-    }
-    return null;
+  public static List<Field> getIdField(Class entityClass){
+    return Arrays.stream(entityClass.getDeclaredFields()).filter(HunterUtils::isPrimaryKey)
+      .collect(Collectors.toList());
+  }
+
+
+  /**
+   * 获取自增的字段
+   * @param type
+   * @return
+   */
+  public static Field getGeneratorValueField(Class type){
+    return Arrays.stream(type.getDeclaredFields()).filter(f -> f.isAnnotationPresent(GeneratorValue.class))
+      .findFirst().orElse(null);
   }
 }

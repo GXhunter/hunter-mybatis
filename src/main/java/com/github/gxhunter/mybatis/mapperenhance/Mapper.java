@@ -1,7 +1,21 @@
+/**
+ *    Copyright 2009-2020 the original author or authors.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package com.github.gxhunter.mybatis.mapperenhance;
 import com.github.gxhunter.mybatis.annotation.CommonMapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,27 +49,25 @@ public interface Mapper<T>{
   /**
    * 更新不为null的字段
    *
-   * @param id     主键
    * @param entity 实体
    * @return 影响条目
    */
-  int updateByIdSelective(@Param("id") Serializable id,@Param("entity") T entity);
+  int updateByIdSelective(@Param("entity") T entity);
 
   /**
    * 更新所有字段，包括null
    *
-   * @param id     主键
    * @param entity 实体
    * @return 影响条目
    */
-  int updateById(@Param("id") Serializable id,@Param("entity") T entity);
+  int updateById(@Param("entity") T entity);
 
   /**
    * 插入一条数据
    * @param entity 实体
    * @return 影响条目
    */
-  int insert(@Param("entity") T entity);
+  int insert(T entity);
 
 
   /**
@@ -63,5 +75,5 @@ public interface Mapper<T>{
    * @param entityList 实体
    * @return 影响条目
    */
-  int insertBatch(@Param("entityList") List<T> entityList);
+  int insertBatch(List<T> entityList);
 }
