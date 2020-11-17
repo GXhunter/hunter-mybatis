@@ -201,4 +201,9 @@ public class BeanWrapper extends BaseWrapper {
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public boolean userNest(){
+    return true;
+  }
+
 }

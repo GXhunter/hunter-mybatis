@@ -52,4 +52,6 @@ public interface ObjectWrapper {
 
   <E> void addAll(List<E> element);
 
+  boolean userNest();
+
 }

@@ -124,7 +124,7 @@ public class MetaObject {
   }
 
   public void setValue(String name, Object value) {
-    PropertyTokenizer prop = new PropertyTokenizer(name);
+    PropertyTokenizer prop = new PropertyTokenizer(name,objectWrapper.userNest());
     if (prop.hasNext()) {
       MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
       if (metaValue == SystemMetaObject.NULL_META_OBJECT) {

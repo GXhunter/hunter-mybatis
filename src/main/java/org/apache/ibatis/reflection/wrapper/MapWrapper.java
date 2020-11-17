@@ -155,4 +155,9 @@ public class MapWrapper extends BaseWrapper {
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public boolean userNest(){
+    return false;
+  }
+
 }

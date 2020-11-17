@@ -27,8 +27,17 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
   private final String children;
 
   public PropertyTokenizer(String fullname) {
+    this(fullname,true);
+  }
+
+  /**
+   *
+   * @param fullname
+   * @param nest 是否.嵌套
+   */
+  public PropertyTokenizer(String fullname,boolean nest) {
     int delim = fullname.indexOf('.');
-    if (delim > -1) {
+    if (nest&&delim > -1) {
       name = fullname.substring(0, delim);
       children = fullname.substring(delim + 1);
     } else {
@@ -37,7 +46,7 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
     }
     indexedName = name;
     delim = name.indexOf('[');
-    if (delim > -1) {
+    if (nest&&delim > -1) {
       index = name.substring(delim + 1, name.length() - 1);
       name = name.substring(0, delim);
     }
